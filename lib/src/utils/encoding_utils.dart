@@ -43,6 +43,6 @@ class EncodingUtils {
     final inputBytes = utf8.encode(jsonString);
 
     final compressed = GZipEncoder().encode(inputBytes);
-    return Uint8List.fromList(compressed);
+    return Uint8List.fromList(compressed ?? []);
   }
 }
