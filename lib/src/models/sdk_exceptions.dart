@@ -70,31 +70,36 @@ abstract class ZetrixSDKExceptions with _$ZetrixSDKExceptions {
 
   /// Maps Dio-specific exceptions into meaningful SDK exceptions.
   ///
-  /// This method processes a DioException error and converts it into
-  /// a corresponding [ZetrixSDKExceptions] instance based on the type of DioException
+  /// This method processes a DioError and converts it into
+  /// a corresponding [ZetrixSDKExceptions] instance based on the type of DioError
   /// or the HTTP response code.
   static ZetrixSDKExceptions getDioException(Object error) {
     if (error is Exception) {
       try {
         ZetrixSDKExceptions sdkExceptions;
-        if (error is DioException) {
+        if (error is DioError) {
           switch (error.type) {
-            case DioExceptionType.cancel:
+            case DioErrorType.cancel:
               sdkExceptions = const ZetrixSDKExceptions.requestCancelled();
               break;
-            case DioExceptionType.connectionTimeout:
+            case DioErrorType.connectTimeout:
               sdkExceptions = const ZetrixSDKExceptions.requestTimeout();
               break;
-            case DioExceptionType.unknown:
+            case DioErrorType.other:
               sdkExceptions = const ZetrixSDKExceptions.noInternetConnection();
               break;
-            case DioExceptionType.receiveTimeout:
-              switch (error.response!.statusCode) {
+            case DioErrorType.receiveTimeout:
+              sdkExceptions = const ZetrixSDKExceptions.requestTimeout();
+              break;
+            case DioErrorType.sendTimeout:
+              sdkExceptions = const ZetrixSDKExceptions.sendTimeout();
+              break;
+            case DioErrorType.response:
+              switch (error.response?.statusCode) {
                 case 400:
                   sdkExceptions = ZetrixSDKExceptions.defaultError(error
                       .response!.data['messages'].first['message']
                       .toString());
-
                   break;
                 case 401:
                   sdkExceptions =
@@ -123,21 +128,12 @@ abstract class ZetrixSDKExceptions with _$ZetrixSDKExceptions {
                       const ZetrixSDKExceptions.serviceUnavailable();
                   break;
                 default:
-                  var responseCode = error.response!.statusCode;
+                  var responseCode = error.response?.statusCode;
                   sdkExceptions = ZetrixSDKExceptions.defaultError(
                     "Received invalid status code: $responseCode",
                   );
               }
               break;
-            case DioExceptionType.sendTimeout:
-              sdkExceptions = const ZetrixSDKExceptions.sendTimeout();
-              break;
-            case DioExceptionType.badCertificate:
-              sdkExceptions = const ZetrixSDKExceptions.badRequest();
-            case DioExceptionType.badResponse:
-              sdkExceptions = const ZetrixSDKExceptions.badRequest();
-            case DioExceptionType.connectionError:
-              sdkExceptions = const ZetrixSDKExceptions.badRequest();
           }
         } else if (error is SocketException) {
           sdkExceptions = const ZetrixSDKExceptions.noInternetConnection();
