@@ -29,13 +29,15 @@ class ConfigReader {
   /// Returns the fixed x-api-key header value for the Zetrix BaaS API.
   static String getXApiKey(bool isMainnet) {
     return isMainnet
-        ? 'ehg7q2i6aN8jY6BbHqN5q42KsHQFRwl260jqAkAU' //Mainnet x-api-key
+        ? 'OOXtr6biOR6eJa2Rjj9En4PwDxxl0U2haUohaxrC' //Mainnet x-api-key
         : 'ehg7q2i6aN8jY6BbHqN5q42KsHQFRwl260jqAkAU';
   }
 
   /// Returns the URL for resolving did DOC from Zetrix Identity Resolver.
-  static String getZidResolverUrl(){
-    return 'https://zid-resolver.myegdev.com/1.0/identifiers';
+  static String getZidResolverUrl(bool isMainnet){
+    return isMainnet
+        ? 'https://zid-resolver.zetrix.com/1.0/identifiers'
+        : 'https://zid-resolver.myegdev.com/1.0/identifiers';
   }
 
   ///Returns publicKey for VC encryption

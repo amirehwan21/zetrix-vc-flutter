@@ -1,34 +1,31 @@
-import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
-import 'package:zetrix_vc_flutter/frb_generated.dart';
-import 'package:zetrix_vc_flutter/src/models/bulletproof/bulletproof_proof.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart' show Int64List;
+import 'package:zetrix_vc_flutter/api.dart' as rust;
+import 'package:zetrix_vc_flutter/src/models/bulletproof/bulletproof_proof.dart';
+
 /// Service for generating and verifying Bulletproof range proofs
-/// 
+///
 /// Matches Java BulletProofUtil API for generating and verifying
 /// zero-knowledge range proofs using the Rust bulletproofs library.
-/// 
+///
 /// Example:
 /// ```dart
 /// // Initialize once at app startup
 /// await RustLib.init();
-/// 
+///
 /// final service = BulletproofService();
-/// 
+///
 /// // Prove age >= 18 without revealing actual age
 /// final proof = await service.generateSingleMinRangeProof(
 ///   value: 25,
 ///   min: 18,
 /// );
-/// 
+///
 /// // Verify the proof
 /// final isValid = await service.verifyMultipleRangeProof(proof: proof);
 /// ```
 class BulletproofService {
   static const int defaultBitSize = 32;
   static const String defaultDomain = 'zetrix-vc';
-  
-  /// Get the Rust bridge API instance
-  RustLibApi get _api => RustLib.instance.api;
 
   /// Generate single minimum range proof: value >= min
   Future<BulletproofProof> generateSingleMinRangeProof({
@@ -37,17 +34,17 @@ class BulletproofService {
     int bitSize = defaultBitSize,
     String domain = defaultDomain,
   }) async {
-    final result = await _api.crateApiGenerateSingleMinRangeProof(
+    final result = await rust.generateSingleMinRangeProof(
       value: value,
       min: min,
       bitSize: bitSize,
       domain: domain,
     );
-    
+
     if (!result.success) {
       throw Exception('Failed to generate proof: ${result.errorMessage}');
     }
-    
+
     return BulletproofProof(
       proofValue: result.proofValue,
       commitments: result.commitments,
@@ -63,17 +60,17 @@ class BulletproofService {
     int bitSize = defaultBitSize,
     String domain = defaultDomain,
   }) async {
-    final result = await _api.crateApiGenerateSingleMaxRangeProof(
+    final result = await rust.generateSingleMaxRangeProof(
       value: value,
       max: max,
       bitSize: bitSize,
       domain: domain,
     );
-    
+
     if (!result.success) {
       throw Exception('Failed to generate proof: ${result.errorMessage}');
     }
-    
+
     return BulletproofProof(
       proofValue: result.proofValue,
       commitments: result.commitments,
@@ -90,18 +87,18 @@ class BulletproofService {
     int bitSize = defaultBitSize,
     String domain = defaultDomain,
   }) async {
-    final result = await _api.crateApiGenerateSingleMinMaxRangeProof(
+    final result = await rust.generateSingleMinMaxRangeProof(
       value: value,
       min: min,
       max: max,
       bitSize: bitSize,
       domain: domain,
     );
-    
+
     if (!result.success) {
       throw Exception('Failed to generate proof: ${result.errorMessage}');
     }
-    
+
     return BulletproofProof(
       proofValue: result.proofValue,
       commitments: result.commitments,
@@ -120,18 +117,18 @@ class BulletproofService {
     if (values.length != mins.length) {
       throw ArgumentError('Values and mins must have the same length');
     }
-    
-    final result = await _api.crateApiGenerateMultipleMinRangeProof(
+
+    final result = await rust.generateMultipleMinRangeProof(
       values: Int64List.fromList(values),
       mins: Int64List.fromList(mins),
       bitSize: bitSize,
       domain: domain,
     );
-    
+
     if (!result.success) {
       throw Exception('Failed to generate proof: ${result.errorMessage}');
     }
-    
+
     return BulletproofProof(
       proofValue: result.proofValue,
       commitments: result.commitments,
@@ -150,18 +147,18 @@ class BulletproofService {
     if (values.length != maxs.length) {
       throw ArgumentError('Values and maxs must have the same length');
     }
-    
-    final result = await _api.crateApiGenerateMultipleMaxRangeProof(
+
+    final result = await rust.generateMultipleMaxRangeProof(
       values: Int64List.fromList(values),
       maxs: Int64List.fromList(maxs),
       bitSize: bitSize,
       domain: domain,
     );
-    
+
     if (!result.success) {
       throw Exception('Failed to generate proof: ${result.errorMessage}');
     }
-    
+
     return BulletproofProof(
       proofValue: result.proofValue,
       commitments: result.commitments,
@@ -182,19 +179,19 @@ class BulletproofService {
     if (values.length != mins.length || values.length != maxs.length) {
       throw ArgumentError('Values, mins, and maxs must have the same length');
     }
-    
-    final result = await _api.crateApiGenerateMultipleMinMaxRangeProof(
+
+    final result = await rust.generateMultipleMinMaxRangeProof(
       values: Int64List.fromList(values),
       mins: Int64List.fromList(mins),
       maxs: Int64List.fromList(maxs),
       bitSize: bitSize,
       domain: domain,
     );
-    
+
     if (!result.success) {
       throw Exception('Failed to generate proof: ${result.errorMessage}');
     }
-    
+
     return BulletproofProof(
       proofValue: result.proofValue,
       commitments: result.commitments,
@@ -207,13 +204,13 @@ class BulletproofService {
   Future<bool> verifyMultipleRangeProof({
     required BulletproofProof proof,
   }) async {
-    final result = await _api.crateApiVerifyMultipleRangeProof(
+    final result = await rust.verifyMultipleRangeProof(
       bitSize: proof.bitSize,
       proofValue: proof.proofValue,
       commitments: proof.commitments,
       domain: proof.domain,
     );
-    
+
     return result.isValid;
   }
 
@@ -223,7 +220,7 @@ class BulletproofService {
     required int max,
     required BulletproofProof proof,
   }) async {
-    final result = await _api.crateApiVerifySingleMinMaxRangeProof(
+    final result = await rust.verifySingleMinMaxRangeProof(
       min: min,
       max: max,
       bitSize: proof.bitSize,
@@ -231,7 +228,7 @@ class BulletproofService {
       commitments: proof.commitments,
       domain: proof.domain,
     );
-    
+
     return result.isValid;
   }
 
@@ -244,8 +241,8 @@ class BulletproofService {
     if (mins.length != maxs.length) {
       throw ArgumentError('Mins and maxs must have the same length');
     }
-    
-    final result = await _api.crateApiVerifyMultipleMinMaxRangeProof(
+
+    final result = await rust.verifyMultipleMinMaxRangeProof(
       mins: Int64List.fromList(mins),
       maxs: Int64List.fromList(maxs),
       bitSize: proof.bitSize,
@@ -253,7 +250,7 @@ class BulletproofService {
       commitments: proof.commitments,
       domain: proof.domain,
     );
-    
+
     return result.isValid;
   }
 }

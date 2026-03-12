@@ -39,6 +39,9 @@ dev_dependencies:
   json_serializable: ^6.9.5
   build_runner: ^2.4.15
 
+false_secrets:
+  - /lib/src/config.dart
+
 flutter:
   plugin:
     platforms:

@@ -282,7 +282,7 @@ class ZetrixVpService {
       String holderPublicKey,
       String holderPrivateKey,
       RangeProofRequest? rangeProofRequest) async {
-    final resolverUrl = ConfigReader.getZidResolverUrl();
+    final resolverUrl = ConfigReader.getZidResolverUrl(isMainnet);
     //add holder signature in the VP
     final DidResolverService didResolverService =
         DidResolverService(resolverUrl: resolverUrl);
