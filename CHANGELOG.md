@@ -1,3 +1,9 @@
+## 0.0.7
+
+### Update
+- Support 16KB page size for Android (Google requirement)
+- Add VP Bulletproof feature and VP submission with DCQL support
+
 ## 0.0.6
 
 ### Update
